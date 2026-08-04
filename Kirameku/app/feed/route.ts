@@ -3,7 +3,7 @@ import { siteConfig } from "@/siteConfig";
 import { marked } from "marked";
 import type { PostItem } from "@/app/api/posts";
 
-export const revalidate = 3600;
+export const dynamic = "force-dynamic";
 
 const BACKEND_URL =
   process.env.BACKEND_URL ||
@@ -18,18 +18,20 @@ interface PostDetail extends PostItem {
 
 export async function GET() {
   try {
-    const listRes = await fetch(
-      `${BACKEND_URL}/api/posts?status=published&size=10`
-    );
+    const listRes = await fetch(`${BACKEND_URL}/api/posts?status=published&size=10`, {
+      cache: "no-store",
+      signal: AbortSignal.timeout(10000),
+    });
     if (!listRes.ok) throw new Error(`Backend returned ${listRes.status}`);
     const posts: PostItem[] = await listRes.json();
 
     // 并行拉取每篇文章的全文（markdown content）
     const detailResults = await Promise.allSettled(
       posts.map((p) =>
-        fetch(`${BACKEND_URL}/api/posts/${p.slug}`).then(
-          (r) => r.json() as Promise<PostDetail>
-        )
+        fetch(`${BACKEND_URL}/api/posts/${p.slug}`, {
+          cache: "no-store",
+          signal: AbortSignal.timeout(10000),
+        }).then((r) => r.json() as Promise<PostDetail>)
       )
     );
 
