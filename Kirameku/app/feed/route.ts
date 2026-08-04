@@ -5,7 +5,10 @@ import type { PostItem } from "@/app/api/posts";
 
 export const revalidate = 3600;
 
-const BACKEND_URL = "http://127.0.0.1:8000";
+const BACKEND_URL =
+  process.env.BACKEND_URL ||
+  process.env.NEXT_PUBLIC_API_URL ||
+  "https://two234blog.onrender.com";
 
 const FEED_AUTHOR = `guh982719@gmail.com (${siteConfig.authorName})`;
 

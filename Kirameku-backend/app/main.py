@@ -33,10 +33,13 @@ uploads_dir = Path(__file__).resolve().parent.parent / "uploads"
 uploads_dir.mkdir(exist_ok=True)
 app.mount("/uploads", StaticFiles(directory=str(uploads_dir)), name="uploads")
 
-# 挂载 Vue 管理后台
-admin_dist = Path(__file__).resolve().parent.parent / "admin" / "dist"
-if admin_dist.exists():
-    app.mount("/admin", StaticFiles(directory=str(admin_dist), html=True), name="admin")
+# 挂载 Vue 管理后台（Pure Admin 默认产物目录是 build；兼容 dist）
+admin_root = Path(__file__).resolve().parent.parent / "admin"
+admin_dist = admin_root / "dist"
+admin_build = admin_root / "build"
+admin_static_dir = admin_dist if admin_dist.exists() else admin_build
+if admin_static_dir.exists():
+    app.mount("/admin", StaticFiles(directory=str(admin_static_dir), html=True), name="admin")
 
 
 @app.get("/api/health")
