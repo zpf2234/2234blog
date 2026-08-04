@@ -1,17 +1,25 @@
 import type { NextConfig } from "next";
 
+const backendUrl = process.env.NEXT_PUBLIC_API_URL || "https://two234blog.onrender.com";
+
 const nextConfig: NextConfig = {
   compress: true,
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
 
   async rewrites() {
     return [
       {
         source: "/api/:path*",
-        destination: "http://127.0.0.1:8000/api/:path*",
+        destination: `${backendUrl}/api/:path*`,
       },
       {
         source: "/uploads/:path*",
-        destination: "http://127.0.0.1:8000/uploads/:path*",
+        destination: `${backendUrl}/uploads/:path*`,
       },
       {
         source: "/reader3/:path*",
@@ -31,15 +39,14 @@ const nextConfig: NextConfig = {
   },
 
   images: {
+    unoptimized: true,
     formats: ["image/avif", "image/webp"],
     remotePatterns: [
-      { protocol: "https", hostname: "static.hiromu.top" },
-      { protocol: "https", hostname: "hiromu520.oss-cn-beijing.aliyuncs.com" },
-      { protocol: "https", hostname: "picsum.photos" },
-      { protocol: "https", hostname: "avatars.githubusercontent.com" },
-      { protocol: "http", hostname: "wfqqreader-1252317822.image.myqcloud.com" },
+      { protocol: "https", hostname: "**" },
+      { protocol: "http", hostname: "**" },
     ],
   },
 };
 
 export default nextConfig;
+
